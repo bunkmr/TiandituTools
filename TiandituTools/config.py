@@ -34,9 +34,9 @@ DEFAULTS = {
     #: "auto" = 读 http_proxy / HTTP_PROXY 环境变量（dev-sidecar 这类本机代理
     #: 通常会把端口写在那里）；也可以直接填 "127.0.0.1:56991"。
     "xyzProxy": u"",
-    # ---- 微信公众号（帮助页「关注」区用的），文章还没写，先留空占位 ----
-    "wechatName": u"",
-    "wechatArticleUrl": u"",
+    # ---- 微信公众号（帮助页「关于」区）。已上线，可在界面里就地改 ----
+    "wechatName": u"bunkr",
+    "wechatArticleUrl": u"https://mp.weixin.qq.com/s/robaTWwtKVXDMGTgr5GCug",
     "wechatTip": u"",
 }
 

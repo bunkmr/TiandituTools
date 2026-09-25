@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 """帮助窗口（Tkinter，只在独立进程里跑）。
 
-五个页签：快速上手 / 图源说明 / 自定义 XYZ / 常见问题 / 关于。
+五个页签：关于 / 快速上手 / 图源说明 / 自定义 XYZ / 常见问题。
+「关于」放第一个 —— 打开帮助就看到版本、作者和公众号入口。
 
 三个"踩过才知道"的约束，改这个文件前先看：
   1. 页眉图**必须是 GIF**：ArcMap 自带的 Tk 8.5，PhotoImage 不认 PNG
      （实测 TclError: couldn't recognize data）。所以页眉用
      images/help_logo.gif，不是 help_logo.png。
-  2. 二维码位置是**预留的**：微信文章还没发布，config 里的
-     wechatName / wechatArticleUrl 默认为空。空的时候界面显示占位提示 +
-     一张占位二维码图（images/wechat_qr.gif），并且允许就地填写保存 ——
-     这样文章发出来那天，用户自己贴一下链接就行，不用等插件升级。
-     真二维码做好后，用同名文件覆盖 images/wechat_qr.gif 即可。
+  2. 二维码位：真二维码已放进 images/wechat_qr.gif（124px 1-bit GIF，
+     源图 248px 整数 2 倍最近邻降采样 —— Tk 8.5 的 PhotoImage 不能缩放，
+     只能整数倍抽取）。公众号名称 / 文章链接的**默认值**在 config.py
+     的 DEFAULTS（wechatName / wechatArticleUrl），用户可在「关于」页
+     就地改并保存到 config.json 覆盖默认值，不用等插件升级。
   3. 本模块只在独立进程里被 import（见 ui_main.py 的 mode="help"），
      绝不能出现在 ArcMap 进程里 —— Tkinter 进 ArcMap 进程会让它被
      CRT 强制中止。
@@ -298,6 +299,15 @@ HELP_ABOUT_TEXT = u"""
 
 ## 版本
     %s
+
+## 作者
+    bunkr
+
+## 公众号
+    公众号「bunkr」，安装与使用的完整说明在这篇文章里：
+    https://mp.weixin.qq.com/s/robaTWwtKVXDMGTgr5GCug
+    （下方「打开文章」一键跳转，「复制链接」可分享；
+     右侧扫码关注）
 
 ## 定位
     一个"够用就好"的小工具：把常见在线底图一键加进 ArcMap，
@@ -694,11 +704,11 @@ class HelpWindow(tk.Toplevel):
         nb = ttk.Notebook(self)
         nb.pack(fill=tk.BOTH, expand=True, padx=8, pady=8)
         self.nb = nb
+        AboutTab(nb, fonts, nb)
         _text_tab(nb, u"快速上手", HELP_QUICKSTART, fonts)
         _text_tab(nb, u"图源说明", HELP_SOURCES, fonts)
         _text_tab(nb, u"自定义 XYZ", HELP_XYZ, fonts)
         _text_tab(nb, u"常见问题", HELP_FAQ, fonts)
-        AboutTab(nb, fonts, nb)
 
         bar = ttk.Frame(self, padding=(10, 0, 10, 10))
         bar.pack(fill=tk.X)

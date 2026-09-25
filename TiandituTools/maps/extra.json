@@ -1,0 +1,15 @@
+{
+  "_readme": [
+    "「其他地图」清单 —— 留给**用户自己导入**的地图包，以及不适合放进",
+    "内置清单 xyz.json 的零散条目。",
+    "",
+    "原有内容（Google / Esri / 高德 / Stamen-Stadia / OpenRailwayMap）已经",
+    "并入 maps/xyz.json：那边有统一的字段（zmin/zmax、subdomains、datum、",
+    "proxy、note），_xyz_sources.py 会一并读取，界面上也能一起管理，",
+    "没必要在两个文件里各维护一份、还互相重复。",
+    "原始文件备份在项目根 _backup_extra.json。",
+    "",
+    "格式与 xyz.json 完全一致（每组一个数组，元素含 name/url/zmin/zmax/…），",
+    "也可以从「设置 → 图源管理 → 导入地图包(zip)」整包导入到本文件。"
+  ]
+}

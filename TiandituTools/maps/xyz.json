@@ -1,0 +1,255 @@
+{
+  "_readme": [
+    "内置 XYZ 瓦片图源清单。读取与翻译逻辑见 ../xyz_sources.py。",
+    "",
+    "字段：name 名称 / url 模板 / zmin-zmax 可用层级 / subdomains 子域列表",
+    "      datum 坐标系（wgs84；gcj02 是国内偏移源，叠加 WGS84 数据会错位数百米）",
+    "      referer 防盗链时补的 Referer / proxy true|false 是否强制走系统代理",
+    "      note 备注",
+    "占位符：{x} {y} {z} {-y}(TMS 南起) {s}(子域) {tk}(天地图 Key，取当前配置)",
+    "",
+    "每一项的可用性都用 dev_probe_xyz.py 实测过（取样点=北京，见 xyz_sources.PROBE_LONLAT）。",
+    "「境外图源」那一组在国内网络下多半连不上，需要在设置里配好代理才能用。",
+    "用户自己加的源存在 %APPDATA%\\TiandituTools\\config.json，不写在这个文件里。"
+  ],
+
+  "天地图（XYZ 接口）": [
+    {
+      "name": "天地图-矢量底图(XYZ)",
+      "url": "https://t{s}.tianditu.gov.cn/DataServer?T=vec_w&x={x}&y={y}&l={z}&tk={tk}",
+      "subdomains": ["0", "1", "2", "3", "4", "5", "6", "7"],
+      "zmin": 1, "zmax": 18, "datum": "wgs84",
+      "note": "天地图老接口 DataServer，数据与 WMTS 那份一致；需先在设置里填好 Key"
+    },
+    {
+      "name": "天地图-影像底图(XYZ)",
+      "url": "https://t{s}.tianditu.gov.cn/DataServer?T=img_w&x={x}&y={y}&l={z}&tk={tk}",
+      "subdomains": ["0", "1", "2", "3", "4", "5", "6", "7"],
+      "zmin": 1, "zmax": 18, "datum": "wgs84",
+      "note": "需先在设置里填好 Key"
+    },
+    {
+      "name": "天地图-矢量注记(XYZ)",
+      "url": "https://t{s}.tianditu.gov.cn/DataServer?T=cva_w&x={x}&y={y}&l={z}&tk={tk}",
+      "subdomains": ["0", "1", "2", "3", "4", "5", "6", "7"],
+      "zmin": 1, "zmax": 18, "datum": "wgs84",
+      "note": "透明注记，叠在矢量的上面"
+    },
+    {
+      "name": "天地图-影像注记(XYZ)",
+      "url": "https://t{s}.tianditu.gov.cn/DataServer?T=cia_w&x={x}&y={y}&l={z}&tk={tk}",
+      "subdomains": ["0", "1", "2", "3", "4", "5", "6", "7"],
+      "zmin": 1, "zmax": 18, "datum": "wgs84",
+      "note": "透明注记，叠在影像的上面"
+    },
+    {
+      "name": "天地图-地形晕染(XYZ)",
+      "url": "https://t{s}.tianditu.gov.cn/DataServer?T=ter_w&x={x}&y={y}&l={z}&tk={tk}",
+      "subdomains": ["0", "1", "2", "3", "4", "5", "6", "7"],
+      "zmin": 1, "zmax": 14, "datum": "wgs84"
+    }
+  ],
+
+  "Esri 在线地图": [
+    {
+      "name": "Esri-影像底图 Imagery",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "note": "国内可直连、响应稳定，是影像底图最省事的备用源"
+    },
+    {
+      "name": "Esri-地形底图 Topographic",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 19, "datum": "wgs84"
+    },
+    {
+      "name": "Esri-街道图 Streets",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 19, "datum": "wgs84"
+    },
+    {
+      "name": "Esri-浅灰画布 Canvas",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 16, "datum": "wgs84",
+      "note": "极简灰白，适合做专题图的底"
+    },
+    {
+      "name": "Esri-国家地理 NatGeo",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 16, "datum": "wgs84"
+    },
+    {
+      "name": "Esri-地貌晕渲 Hillshade",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Elevation/World_Hillshade/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 16, "datum": "wgs84",
+      "note": "会把底图压暗，建议叠在别的图层下面当阴影"
+    },
+    {
+      "name": "Esri-海洋底图 Ocean Base",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/Ocean/World_Ocean_Base/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 13, "datum": "wgs84"
+    },
+    {
+      "name": "Esri-地形底图 Terrain Base",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 13, "datum": "wgs84"
+    },
+    {
+      "name": "Esri-自然地文 Physical Map",
+      "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 8, "datum": "wgs84",
+      "note": "只有很粗的层级（到 z8），适合大尺度自然地理示意"
+    }
+  ],
+
+  "国内图源（GCJ-02 偏移）": [
+    {
+      "name": "高德-影像底图（含路网）",
+      "url": "https://webst0{s}.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}",
+      "subdomains": ["1", "2", "3", "4"],
+      "zmin": 1, "zmax": 18, "datum": "gcj02"
+    },
+    {
+      "name": "高德-路网注记（透明）",
+      "url": "https://webst0{s}.is.autonavi.com/appmaptile?style=8&x={x}&y={y}&z={z}",
+      "subdomains": ["1", "2", "3", "4"],
+      "zmin": 1, "zmax": 18, "datum": "gcj02",
+      "note": "透明路网，叠在高德影像上一起用"
+    },
+    {
+      "name": "高德-矢量底图",
+      "url": "https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}",
+      "subdomains": ["1", "2", "3", "4"],
+      "zmin": 1, "zmax": 18, "datum": "gcj02"
+    },
+    {
+      "name": "腾讯-矢量底图",
+      "url": "https://rt{s}.map.gtimg.com/tile?z={z}&x={x}&y={-y}&type=vector&styleid=3",
+      "subdomains": ["0", "1", "2", "3"],
+      "zmin": 1, "zmax": 18, "datum": "gcj02",
+      "referer": "https://map.qq.com/",
+      "note": "行号用的是 TMS 的 {-y}（南起），插件已自动换算"
+    }
+  ],
+
+  "境外图源（需代理）": [
+    {
+      "name": "Google-影像 Satellite",
+      "url": "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+      "zmin": 0, "zmax": 21, "datum": "gcj02",
+      "proxy": true,
+      "note": "国内直连不通；中文区域的 Google 影像本身也是 GCJ-02 偏移。请先在设置里配好代理"
+    },
+    {
+      "name": "Google-路网 Roadmap",
+      "url": "https://mt1.google.com/vt/lyrs=r&x={x}&y={y}&z={z}",
+      "zmin": 0, "zmax": 21, "datum": "gcj02",
+      "proxy": true,
+      "note": "国内直连不通；中国区路网同样是 GCJ-02"
+    },
+    {
+      "name": "Google-地形 Terrain",
+      "url": "https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}",
+      "zmin": 0, "zmax": 21, "datum": "gcj02",
+      "proxy": true,
+      "note": "国内直连不通；中国区同为 GCJ-02"
+    },
+    {
+      "name": "OpenStreetMap 标准图",
+      "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "referer": "https://www.openstreetmap.org/",
+      "proxy": true,
+      "note": "WGS84 无偏移；官方瓦片服务器有使用量限制，批量出图请自建或换商用源"
+    },
+    {
+      "name": "OSM 德式风格 German style",
+      "url": "https://tile.openstreetmap.de/{z}/{x}/{y}.png",
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "referer": "https://www.openstreetmap.de/",
+      "proxy": true
+    },
+    {
+      "name": "OpenTopoMap 地形图",
+      "url": "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+      "subdomains": ["a", "b", "c"],
+      "zmin": 0, "zmax": 17, "datum": "wgs84",
+      "proxy": true,
+      "note": "等高线 + 晕渲，做地形背景很好用"
+    },
+    {
+      "name": "CARTO 浅色底图",
+      "url": "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+      "subdomains": ["a", "b", "c", "d"],
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "proxy": true
+    },
+    {
+      "name": "CARTO 深色底图",
+      "url": "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png",
+      "subdomains": ["a", "b", "c", "d"],
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "proxy": true
+    },
+    {
+      "name": "CARTO 淡彩底图 Voyager",
+      "url": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+      "subdomains": ["a", "b", "c", "d"],
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "proxy": true
+    },
+    {
+      "name": "Wikimedia 地图",
+      "url": "https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png",
+      "zmin": 0, "zmax": 18, "datum": "wgs84",
+      "referer": "https://www.wikipedia.org/",
+      "proxy": true
+    },
+    {
+      "name": "USGS 地形图 Topo（美国）",
+      "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSTopo/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 16, "datum": "wgs84",
+      "proxy": true
+    },
+    {
+      "name": "USGS 影像图 Imagery（美国）",
+      "url": "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}",
+      "zmin": 0, "zmax": 16, "datum": "wgs84",
+      "proxy": true
+    },
+    {
+      "name": "OpenRailwayMap 铁路标准图",
+      "url": "https://a.tiles.openrailwaymap.org/standard/{z}/{x}/{y}.png",
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "proxy": true,
+      "note": "全球铁路线专题，做交通类图纸很有用"
+    },
+    {
+      "name": "OpenRailwayMap 信号系统",
+      "url": "https://a.tiles.openrailwaymap.org/signals/{z}/{x}/{y}.png",
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "proxy": true
+    },
+    {
+      "name": "OpenRailwayMap 最高限速",
+      "url": "https://a.tiles.openrailwaymap.org/maxspeed/{z}/{x}/{y}.png",
+      "zmin": 0, "zmax": 19, "datum": "wgs84",
+      "proxy": true
+    }
+  ],
+
+  "专题 · 科研": [
+    {
+      "name": "NASA 蓝色弹珠 BlueMarble + 水深",
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/BlueMarble_ShadedRelief_Bathymetry/default/GoogleMapsCompatible_Level8/{z}/{y}/{x}.jpeg",
+      "zmin": 0, "zmax": 8, "datum": "wgs84",
+      "note": "全球自然地表（无云）+ 海底地形，做环球图或汇报封面很好看"
+    },
+    {
+      "name": "NASA 全球影像 MODIS 真彩",
+      "url": "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",
+      "zmin": 0, "zmax": 9, "datum": "wgs84",
+      "note": "逐日无云合成；要换日期就改模板里的 default 段"
+    }
+  ]
+}

@@ -10,9 +10,10 @@
      images/help_logo.gif，不是 help_logo.png。
   2. 二维码位：真二维码已放进 images/wechat_qr.gif（124px 1-bit GIF，
      源图 248px 整数 2 倍最近邻降采样 —— Tk 8.5 的 PhotoImage 不能缩放，
-     只能整数倍抽取）。公众号名称 / 文章链接的**默认值**在 config.py
-     的 DEFAULTS（wechatName / wechatArticleUrl），用户可在「关于」页
-     就地改并保存到 config.json 覆盖默认值，不用等插件升级。
+     只能整数倍抽取）。公众号名称 / 文章链接**内置只读**（v0.8.2 起），
+     默认值在 config.py 的 DEFAULTS（wechatName / wechatArticleUrl），
+     界面只展示、无输入框无保存 —— 改内容须发新版。老 config.json
+     存过的空值会被 _load_wechat 回退到默认值。
   3. 本模块只在独立进程里被 import（见 ui_main.py 的 mode="help"），
      绝不能出现在 ArcMap 进程里 —— Tkinter 进 ArcMap 进程会让它被
      CRT 强制中止。
@@ -33,7 +34,7 @@ import Tkinter as tk
 import tkMessageBox
 import ttk
 
-from config import load_config, save_config
+from config import DEFAULTS, load_config
 from tianditu_api import _to_unicode
 import ui_util
 
@@ -305,7 +306,7 @@ HELP_ABOUT_TEXT = u"""
 
 ## 公众号
     公众号「bunkr」，安装与使用的完整说明在这篇文章里：
-    https://mp.weixin.qq.com/s/robaTWwtKVXDMGTgr5GCug
+    https://mp.weixin.qq.com/s/xsn_6YJtXt9yg7EioBDCpg
     （下方「打开文章」一键跳转，「复制链接」可分享；
      右侧扫码关注）
 
@@ -502,26 +503,28 @@ class AboutTab(ttk.Frame):
         self.var_url = tk.StringVar()
         self.var_tip = tk.StringVar()
 
-        rows = ((u"公众号名称", self.var_name, 30),
-                (u"文章链接", self.var_url, 42),
-                (u"一句话介绍", self.var_tip, 42))
-        for i, (label, var, width) in enumerate(rows):
+        # v0.8.2 起公众号信息为**内置只读**：只展示、不给输入框，
+        # 也不再有「保存」—— 改内容只能发新版。数据来自 config.py
+        # 的 DEFAULTS（老 config.json 里若存过空值，_load_wechat 会回退默认）。
+        rows = ((u"公众号", self.var_name),
+                (u"文章链接", self.var_url))
+        for i, (label, var) in enumerate(rows):
             ttk.Label(left, text=_enc(label), font=fonts["small"]).grid(
                 row=i, column=0, sticky=tk.W, pady=3, padx=(0, 8))
-            ttk.Entry(left, textvariable=var, width=width).grid(
-                row=i, column=1, sticky=tk.EW, pady=3)
+            ttk.Label(left, textvariable=var, font=fonts["body"],
+                      wraplength=340, justify=tk.LEFT).grid(
+                row=i, column=1, sticky=tk.W, pady=3)
         left.columnconfigure(1, weight=1)
 
         bar = ttk.Frame(left)
         bar.grid(row=3, column=0, columnspan=2, sticky=tk.W, pady=(6, 0))
-        ttk.Button(bar, text=_enc(u"保存"), command=self.on_save).pack(side=tk.LEFT)
         self.btn_open = ttk.Button(bar, text=_enc(u"打开文章"),
                                    command=self.on_open)
-        self.btn_open.pack(side=tk.LEFT, padx=6)
+        self.btn_open.pack(side=tk.LEFT)
         ttk.Button(bar, text=_enc(u"复制链接"),
-                   command=self.on_copy).pack(side=tk.LEFT)
+                   command=self.on_copy).pack(side=tk.LEFT, padx=6)
         ttk.Button(bar, text=_enc(u"打开配置目录"),
-                   command=self.on_open_dir).pack(side=tk.LEFT, padx=6)
+                   command=self.on_open_dir).pack(side=tk.LEFT)
 
         self.lbl_state = ttk.Label(left, text=u"", font=fonts["small"],
                                    foreground="#666", wraplength=430,
@@ -587,18 +590,20 @@ class AboutTab(ttk.Frame):
 
     def _load_wechat(self):
         c = self.conf
-        self.var_name.set(_u(c.get("wechatName") or u""))
-        self.var_url.set(_u(c.get("wechatArticleUrl") or u""))
-        self.var_tip.set(_u(c.get("wechatTip") or u""))
+        # 老版本可能往 config.json 存过空串；公众号信息已内置只读，
+        # 空值一律回退到 config.py 的 DEFAULTS，别让界面显示空。
+        self.var_name.set(_u(c.get("wechatName") or DEFAULTS.get("wechatName") or u""))
+        self.var_url.set(_u(c.get("wechatArticleUrl") or DEFAULTS.get("wechatArticleUrl") or u""))
+        self.var_tip.set(_u(c.get("wechatTip") or DEFAULTS.get("wechatTip") or u""))
         self._sync_state()
 
     def _sync_state(self):
         name = self.var_name.get().strip()
         url = self.var_url.get().strip()
         if not name and not url:
+            # 公众号信息已内置（v0.8.2），正常到不了这里；留着兜底
             self.lbl_state.configure(
-                text=_enc(u"（预留）公众号与文章还没发布，这里先空着。"
-                          u"填好点「保存」即可 —— 不用等插件升级。"),
+                text=_enc(u"公众号信息由插件内置，此显示为空属异常，请重新安装。"),
                 foreground="#B0530A")
             self.btn_open.configure(state=tk.DISABLED)
         else:
@@ -607,18 +612,11 @@ class AboutTab(ttk.Frame):
                 parts.append(name)
             if not url:
                 parts.append(u"文章链接为空，暂时无法打开")
+            else:
+                parts.append(u"公众号信息由插件内置（只读）")
             self.lbl_state.configure(text=_enc(u" · ".join(parts)),
                                      foreground="#0A7D28")
             self.btn_open.configure(state=(tk.NORMAL if url else tk.DISABLED))
-
-    def on_save(self):
-        save_config({
-            "wechatName": self.var_name.get().strip(),
-            "wechatArticleUrl": self.var_url.get().strip(),
-            "wechatTip": self.var_tip.get().strip(),
-        })
-        self.conf = load_config()
-        self._sync_state()
 
     def on_open(self):
         url = self.var_url.get().strip()

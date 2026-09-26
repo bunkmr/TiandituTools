@@ -36,7 +36,7 @@ DEFAULTS = {
     "xyzProxy": u"",
     # ---- 微信公众号（帮助页「关于」区）。已上线，可在界面里就地改 ----
     "wechatName": u"bunkr",
-    "wechatArticleUrl": u"https://mp.weixin.qq.com/s/robaTWwtKVXDMGTgr5GCug",
+    "wechatArticleUrl": u"https://mp.weixin.qq.com/s/xsn_6YJtXt9yg7EioBDCpg",
     "wechatTip": u"",
 }
 

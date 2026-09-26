@@ -69,7 +69,7 @@ INCLUDE_DEV = os.environ.get("TIANDITU_BUILD_DEV") == "1"
 #
 # 自定义内容请只改下面这几个常量。
 NAME = "TiandituTools"
-VERSION = "0.8.1"
+VERSION = "0.8.2"
 DESCRIPTION = "天地图底图与搜索工具 (ArcMap Python Add-In)"
 AUTHOR = "WorkBuddy"
 COMPANY = "TiandituTools"
